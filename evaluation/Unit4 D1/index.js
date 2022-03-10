@@ -1,40 +1,45 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
-app.use(logger);
-
-app.get('/books', (req,res) => {
-    return res.send({ route: "/books"})
+app.get("/books", logger, (req, res) => {
+  return res.send({ route: "/books" });
 });
 
-app.get('/libraries', permission('library'), (req,res) => {
-    return res.send({ route: "/libraries ", permission: req.role})
+app.get("/libraries", checkPermission("librarian"), (req, res) => {
+  return res.send({ route: req.path, permission: req.permission });
 });
 
-app.get('/authors', permission('writer'), (req,res) => {
-    return res.send({ route: "/authors ", permission: req.role})
+app.get("/authors", checkPermission("author"), (req, res) => {
+  return res.send({ route: req.path, permission: req.permission });
 });
 
-function permission(check){
-    return function(req, res, next){
-        if(check === 'library' || check === 'writer')
-            req.role = true;
-        else
-            req.role = false;
+//middleware for /books
+function logger(req, res, next) {
+  console.log(req.path);
+  next();
+}
 
-        next();
+// middleware for /authors and /libraries
+function checkPermission(permission) {
+  return function (req, res, next) {
+    if (req.path === "/libraries" || req.path === "/authors") {
+      req.permission = true;
+      next();
     }
+  };
 }
 
-
-function logger(req,res,next) {
-    if( req.path === '/books' || req.path === '/authors' || req.path === '/libraries')
-        console.log('correct path');
-        
-    next();
-}
-
+// function checkPermission(permission) {
+//   return function (req, res, next) {
+//     if (permission === "librarian" || permission === "author") {
+//       if (req.path === "/libraries" || req.path === "/authors") {
+//         req.permission = true;
+//         next();
+//       }
+//     }
+//   };
+// }
 
 app.listen(8080, () => {
-    console.log('listening port 8080');
-})
+  console.log("listening port 8080");
+});
