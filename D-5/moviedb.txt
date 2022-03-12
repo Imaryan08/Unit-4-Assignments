@@ -1,0 +1,20 @@
+db.moviesList.find({"movie_name" : {$eq:"Tenure"}}).pretty()
+
+db.moviesList.find({"movie_name" : {$ne:"Tenure"}}).pretty()
+
+db.moviesList.find({"budget": {$gte: 18000}}).pretty()
+
+db.moviesList.find({"budget": {$lte: 9000}}).pretty()
+
+db.moviesList.find({$and: [{production_year: {$gt: 2000}},{"budget ": {$gt: 10000}}]}).pretty()
+
+db.moviesList.find({$or: [{production_year: {$gt: 2000}},{"budget ": {$gt: 10000}}]}).pretty()
+
+db.moviesList.find({$nor: [{production_year: {$gt: 2000}},{"budget ": {$gt: 10000}}]}).pretty()
+
+db.movie_data.find({$or:[{production_year:{$not:{$eq:2000}}},{"budget ":{$not:{$eq:10000}}}]}).pretty()
+
+db.moviesList.find({production_year: {$in: [2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010]}}).pretty()
+
+
+
