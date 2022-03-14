@@ -1,0 +1,24 @@
+use assignment
+
+db.users.insert({first_name: "Aryan", last_name: "Yadav", email: "imaryan08@gmail.com", gender: "male", ip_address: "127.0.0.1", age: 25}) 
+
+db.users.insertMany([{first_name: "Monu", last_name: "Sharma", email: "monu12@gmail.com", gender: "male", ip_address: "127.10.20.1", age: 27}, {first_name: "Mukesh", last_name: "Tyagi", email: "mukesh123@gmail.com", gender: "male", ip_address: "127.100.100.140", age: 32}, {first_name: "Suman", last_name: "Vastrakar", email: "suman42@gmail.com", gender: "female", ip_address: "192.0.10.10", age: 24}, {first_name: "Anjali", last_name: "Shukla", email: "anjali16@gmail.com", gender: "female", ip_address: "192.0.108.10", age: 24}, {first_name: "Raj", last_name: "Barman", email: "barman214@gmail.com", gender: "male", ip_address: "192.10.10.10", age: 42}, {first_name: "Kajal", last_name: "Singhania", email: "kajal545@gmail.com", gender: "female", ip_address: "127.40.10.10", age: 19}, {first_name: "Justin", last_name: "Bieber", email: "justin1231@gmail.com", gender: "male", ip_address: "192.0.10.10", age: 27}])
+
+db.users.count()
+
+db.users.find().pretty()
+
+db.users.findOne()
+
+db.users.update({"_id" : ObjectId("622b912af823cdcc03c8075f")}, {$set: {first_name: "Rampukar"}})
+
+db.users.updateMany({gender: "male"}, {$set: {position: "Full Stack Web Developer"}})
+
+db.users.remove({first_name: "Justin"})
+
+db.users.deleteOne({first_name : "Aryan"})
+
+db.users.deleteMany({gender: "female"})
+
+use assignment
+db.dropDatabase()
