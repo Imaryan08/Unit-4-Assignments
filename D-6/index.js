@@ -1,5 +1,4 @@
 const express = require("express");
-const res = require("express/lib/response");
 const mongoose = require("mongoose");
 const app = express();
 const port = 8080;
@@ -8,9 +7,23 @@ app.use(express.json());
 
 const connect = () => {
   return mongoose.connect(
-    "mongodb+srv://Imaryan08:masai073@cluster0.3kn8f.mongodb.net/library?retryWrites=true&w=majority"
+    "mongodb+srv://Imaryan08:masai073@cluster0.3kn8f.mongodb.net/lib?retryWrites=true&w=majority"
   );
 };
+
+// Author Schema
+const authorSchema = new mongoose.Schema(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
+
+const Author = mongoose.model("author", authorSchema);
 
 // Section Schema
 const sectionSchema = new mongoose.Schema(
@@ -18,142 +31,151 @@ const sectionSchema = new mongoose.Schema(
     sectionName: { type: String, required: true },
   },
   {
-    timestamp: true,
+    timestamps: true,
     versionKey: false,
   }
 );
 
 const Section = mongoose.model("section", sectionSchema);
 
-
-// author schema
-const authorSchema = mongoose.Schema(
-  {
-    // bookId: { type: mongoose.Schema.Types.ObjectId, ref: "book" },
-    firstName: { type: String, required: false },
-    lastName: { type: String, required: false },
-  },
-  {
-    timestamp: true,
-    versionKey: false,
-  }
-);
-
-const Authors = mongoose.model("author", authorSchema);
-
-
 // Book Schema
-const bookschema = new mongoose.Schema(
+
+const bookSchema = new mongoose.Schema(
   {
-    bookName: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
     body: { type: String, required: true },
-    authorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "author",
-      required: true,
-    },
-    sectionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "section",
-      required: true,
-      unique: false,
-    },
+    authorId: {type: mongoose.Schema.Types.ObjectId, require: true, ref: 'author'},
+    sectionId: {type: mongoose.Schema.Types.ObjectId, require: true, ref: 'section'},
   },
   {
-    timestamp: true,
+    timestamps: true,
     versionKey: false,
-  }
-);
-
-const Books = mongoose.model("book", bookschema);
-
-
-
-// checked out
-const checkedOutSchema = new mongoose.Schema(
-  {
-    bookId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "book",
-      required: true,
-    },
-    checkedOutTime: { type: Date, default: null },
-    checkedInTime: { type: Date, default: null },
   },
-  {}
 );
 
-const CheckedOut = mongoose.model("checkedout", checkedOutSchema);
+const Book = mongoose.model("book", bookSchema);
 
-//  CRUD OPERATIONS
+// CRUD for author
+app.post("/authors", async (req, res) => {
+  try {
+    const author = await Author.create(req.body);
+    return res.status(200).send({ author: author });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
 
-// Sections
+app.get("/authors", async (req, res) => {
+  try {
+    const authors = await Author.find().lean().exec();
+    return res.status(200).send({ authors: authors });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
+
+app.patch("/authors/:id", async (req, res) => {
+  try {
+    const author = await Author.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    return res.status(200).send({ author: author });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
+
+app.delete("/authors/:id", async (req, res) => {
+  try {
+    const author = await Author.findByIdAndDelete(req.params.id);
+    return res.status(200).send({ author: author });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
+
+// CRUD for section
 app.post("/sections", async (req, res) => {
   try {
-    const section = await Section.create(req.body);
-    return res.status(201).send({ section: section });
+    const sections = await Section.create(req.body);
+    return res.status(200).send({ sections: sections });
   } catch (err) {
-    return res.status(500).send({ message: err.message });
+    return res.status(500).send({ err: err.message, info: err });
   }
 });
 
 app.get("/sections", async (req, res) => {
   try {
-    const sections = await Section.find().lean().exec();
-    return res.status(200).send({ sections: sections });
+    const section = await Section.find().lean().exec();
+    return res.status(200).send({ section: section });
   } catch (err) {
-    return res.status(500).send({ msg: err.message });
+    return res.status(500).send({ err: err.message, info: err });
   }
 });
 
-//  Author
-
-app.get("/authors", async (req, res) => {
+app.patch("/sections/:id", async (req, res) => {
   try {
-    const authors = await Authors.find().lean().exec();
-    return res.status(200).send({ authors: authors });
+    const section = await Section.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    return res.status(200).send({ section: section });
   } catch (err) {
-    return res.status(500).send({ msg: err.message });
+    return res.status(500).send({ err: err.message, info: err });
   }
 });
 
-app.post("/authors", async (req, res) => {
+app.delete("/sections/:id", async (req, res) => {
   try {
-    const authors = await Authors.create(req.body);
-    return res.status(200).send({ authors: authors });
+    const section = await Section.findByIdAndDelete(req.params.id);
+    return res.status(200).send({ section: section });
   } catch (err) {
-    return res.status(500).send({ msg: err.message });
+    return res.status(500).send({ err: err.message, info: err });
   }
 });
 
-
-// Books
-
-app.get("/books", async (req, res) => {
-  try {
-    const books = await Books.find().lean().exec();
-    return res.status(200).send({ boooks: books });
-  } catch (err) {
-    return res.status(500).send({ msg: err.message });
-  }
-});
-
+// CRUD for books
 app.post("/books", async (req, res) => {
   try {
-    const books = await Books.create(req.body);
-    return res.status(200).send({ boooks: books });
+    const books = await Book.create(req.body);
+    return res.status(200).send({ books: books });
   } catch (err) {
-    return res.status(500).send({ msg: err.message });
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
+app.get("/books", async (req, res) => {
+  try {
+    const book = await Book.find().lean().exec();
+    return res.status(200).send({ book: book });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
   }
 });
 
+app.patch("/books/:id", async (req, res) => {
+  try {
+    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    return res.status(200).send({ book: book });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
 
+app.delete("/books/:id", async (req, res) => {
+  try {
+    const book = await Book.findByIdAndDelete(req.params.id);
+    return res.status(200).send({ book: book });
+  } catch (err) {
+    return res.status(500).send({ err: err.message, info: err });
+  }
+});
 
-app.listen(port, async () => {
+app.listen(port, async (req, res) => {
   try {
     await connect();
-    console.log(`server is up and running on port :${port}`);
+    console.log(`server is up and running on port:${port}`);
   } catch (err) {
-    console.log({ errorMessage: err });
+    console.log(`Aryan- ${err}`);
   }
 });
