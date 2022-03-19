@@ -125,26 +125,26 @@ app.post("/users", async (req, res) => {
 });
 
 // getting single user Data
-app.get("/users/:id", async (req, res) => {
-  try {
-    console.log(req.params.id);
-    const user = await User.findById(req.params.id).lean().exec();
-    return res.status(200).send({ user: user });
-  } catch (err) {
-    return res.status(500).send({ message: err.message });
-  }
-});
-
-// find by name
-// app.get("/users/:fname", async (req, res) => {
+// app.get("/users/:id", async (req, res) => {
 //   try {
-//       console.log(req.params.fname);
-//       const user = await User.find({ firstName : `${req.params.fname}` }).lean().exec();
-//       return res.status(500).send({ user: user });
-//     } catch (err) {
-//     return res.status(500).send({ errorMessage: err.message });
+//     console.log(req.params.id);
+//     const user = await User.findById(req.params.id).lean().exec();
+//     return res.status(200).send({ user: user });
+//   } catch (err) {
+//     return res.status(500).send({ message: err.message });
 //   }
 // });
+
+// find by name
+app.get("/users/:fname", async (req, res) => {
+  try {
+      console.log(req.params.fname);
+      const user = await User.findOne({ firstName : req.params.fname }).lean().exec();
+      return res.status(500).send({ user: user });
+    } catch (err) {
+    return res.status(500).send({ errorMessage: err.message });
+  }
+});
 
 
 
@@ -174,9 +174,9 @@ app.delete("/users/:id", async (req, res) => {
 
 app.listen(port, async () => {
   try {
-    connect();
+    await connect();
     console.log(`server is running on port:${port}`);
   } catch (err) {
-    console.log(err);
+    console.log(`rampukar- ${err}`);
   }
 });
