@@ -1,16 +1,13 @@
-const express = require('express');
-const port = 8080;
+const express = require("express");
+
 const app = express();
 
-const connect = require('./config/db');
+const userControllers = require("./controllers/user.controllers");
 
-const User = require('./models/user.models');
+app.use(express.json());
 
-app.listen(port, async(req,res) => {
-    try{
-        await connect();
-        console.log(`server is up and running on port:${port}`);
-    }catch(err){
-        console.log({err: err.message});
-    }
-})
+app.use('/users', userControllers);
+
+const connect = require("./config/db");
+
+module.exports = app;
