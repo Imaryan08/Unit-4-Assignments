@@ -9,6 +9,15 @@ const User = require("../models/user.model");
 
 // })
 
+module.exports = router.get("/", async(req,res) => {
+  try{
+    const users = await User.find().lean().exec();
+    res.status(200).send({users});
+  }catch(err){
+    res.status(500).send({err: err.message});
+  }
+})
+
 module.exports = router.post(
   "/",
   body("firstName")
