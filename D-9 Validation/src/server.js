@@ -11,7 +11,7 @@ module.exports = async() => {
     await connect();
     
     app.listen(8080, () => {
-        console.log(`server is up and running or porn: 8080`);
+        console.log(`server is up and running or port: 8080`);
     }); 
 };
 
