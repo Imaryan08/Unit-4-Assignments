@@ -1,32 +1,40 @@
-const express = require('express')
+const express = require("express");
 const app = express();
-const port = 8080;
-const connect = require('./configs/db')
-
-const userController = require('./controllers/user.controller');
-const todoController = require('./controllers/todo.controller');
-
+require("dotenv").config();
+const port = process.env.PORT;
+const connect = require("./configs/db");
+const { register, login, newToken } = require("./controllers/authCon");
+const todoController = require("./controllers/todoCon");
+const usersController = require("./controllers/userCon");
+const passport = require("./configs/oauth2");
 app.use(express.json());
-app.use('/users', userController);
-app.use('/todo', todoController);
+app.post("/register", register);
+app.post("/login", login);
+app.use("/todo", todoController);
+app.use("/users", usersController);
 
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: false,
+  }),
+  function (req, res) {
+    const token = newToken(req.user);
+    res.status(200).send({ user: req.user, token });
+  }
+);
 
-
-
-
-
-
-
-
-
-
-
-app.listen(port, async() => {
-    try{
-        await connect();
-        console.log(`server is up and running in port: ${port}`);
-    }catch(err){
-        console.log({dbError: err.message});
-    }
-})
+app.listen(port, async () => {
+  try {
+    await connect();
+    console.log(`listening on port ${port}`);
+  } catch (err) {
+    console.log(err);
+  }
+});
