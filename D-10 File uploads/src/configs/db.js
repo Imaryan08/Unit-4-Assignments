@@ -1,7 +1,5 @@
-const mongoose = require("mongoose");
+const { connect } = require("mongoose");
 
 module.exports = () => {
-  return mongoose.connect(
-    "mongodb+srv://Imaryan08:masai073@cluster0.3kn8f.mongodb.net/file-upload?retryWrites=true&w=majority"
-  );
+  return connect("mongodb://127.0.0.1:27017/fileUploads");
 };
